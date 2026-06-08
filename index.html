@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f0f13" />
+  <meta name="description" content="Vitalis — Votre compagnon santé intelligent" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Vitalis — Santé & Forme</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ========== ONBOARDING ========== -->
+<div id="onboarding" class="onboarding-overlay hidden">
+  <div class="onboarding-container">
+    <div class="onboarding-progress">
+      <div class="progress-bar"><div class="progress-fill" id="ob-progress-fill"></div></div>
+      <span id="ob-step-label">1 / 5</span>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div class="ob-step active" data-step="1">
+      <div class="ob-icon">🌿</div>
+      <h1 class="ob-title">Bienvenue sur <span class="gradient-text">Vitalis</span></h1>
+      <p class="ob-subtitle">Votre compagnon santé intelligent. Quelques questions pour personnaliser votre expérience.</p>
+      <div class="form-group">
+        <label>Votre prénom</label>
+        <input type="text" id="ob-name" placeholder="Ex : Sophie" autocomplete="given-name" />
+      </div>
+      <div class="form-group">
+        <label>Sexe</label>
+        <div class="radio-group">
+          <label class="radio-card"><input type="radio" name="ob-sex" value="homme" /><span>♂ Homme</span></label>
+          <label class="radio-card"><input type="radio" name="ob-sex" value="femme" /><span>♀ Femme</span></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Âge</label>
+        <input type="number" id="ob-age" placeholder="25" min="10" max="120" />
+      </div>
+    </div>
+
+    <!-- Step 2: Body -->
+    <div class="ob-step" data-step="2">
+      <div class="ob-icon">📏</div>
+      <h2 class="ob-title">Votre <span class="gradient-text">morphologie</span></h2>
+      <div class="form-group">
+        <label>Taille (cm)</label>
+        <input type="number" id="ob-height" placeholder="170" min="100" max="250" />
+      </div>
+      <div class="form-group">
+        <label>Poids actuel (kg)</label>
+        <input type="number" id="ob-weight" placeholder="70" min="30" max="300" step="0.1" />
+      </div>
+      <div class="form-group">
+        <label>Poids cible (kg)</label>
+        <input type="number" id="ob-target-weight" placeholder="65" min="30" max="300" step="0.1" />
+      </div>
+    </div>
+
+    <!-- Step 3: Activity & Goal -->
+    <div class="ob-step" data-step="3">
+      <div class="ob-icon">🏃</div>
+      <h2 class="ob-title">Niveau d'<span class="gradient-text">activité</span></h2>
+      <div class="form-group">
+        <label>Niveau d'activité physique</label>
+        <select id="ob-activity">
+          <option value="sedentaire">Sédentaire (peu ou pas d'exercice)</option>
+          <option value="leger">Légèrement actif (1-3j/semaine)</option>
+          <option value="modere">Modérément actif (3-5j/semaine)</option>
+          <option value="actif">Très actif (6-7j/semaine)</option>
+          <option value="extreme">Extrêmement actif (2x/jour)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Objectif principal</label>
+        <div class="goal-grid">
+          <label class="goal-card"><input type="radio" name="ob-goal" value="perte_poids" /><span class="goal-icon">⚖️</span><span>Perte de poids</span></label>
+          <label class="goal-card"><input type="radio" name="ob-goal" value="prise_masse" /><span class="goal-icon">💪</span><span>Prise de masse</span></label>
+          <label class="goal-card"><input type="radio" name="ob-goal" value="maintien" /><span class="goal-icon">⚡</span><span>Maintien</span></label>
+          <label class="goal-card"><input type="radio" name="ob-goal" value="sante" /><span class="goal-icon">❤️</span><span>Santé générale</span></label>
+          <label class="goal-card"><input type="radio" name="ob-goal" value="performance" /><span class="goal-icon">🏆</span><span>Performance sportive</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Diet -->
+    <div class="ob-step" data-step="4">
+      <div class="ob-icon">🥗</div>
+      <h2 class="ob-title">Vos <span class="gradient-text">habitudes</span> alimentaires</h2>
+      <div class="form-group">
+        <label>Régime alimentaire</label>
+        <select id="ob-diet">
+          <option value="omnivore">Omnivore</option>
+          <option value="vegetarien">Végétarien</option>
+          <option value="vegan">Végétalien (vegan)</option>
+          <option value="pescetarien">Pescétarien</option>
+          <option value="flexitarien">Flexitarien</option>
+          <option value="cetogene">Cétogène / Keto</option>
+          <option value="paleo">Paléo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nombre de repas par jour</label>
+        <div class="number-stepper">
+          <button type="button" class="stepper-btn" onclick="stepperChange('ob-meals',-1)">−</button>
+          <input type="number" id="ob-meals" value="3" min="1" max="8" readonly />
+          <button type="button" class="stepper-btn" onclick="stepperChange('ob-meals',1)">+</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Allergies alimentaires (optionnel)</label>
+        <div class="checkbox-group">
+          <label class="check-chip"><input type="checkbox" name="allergy" value="gluten" /><span>Gluten</span></label>
+          <label class="check-chip"><input type="checkbox" name="allergy" value="lactose" /><span>Lactose</span></label>
+          <label class="check-chip"><input type="checkbox" name="allergy" value="noix" /><span>Noix</span></label>
+          <label class="check-chip"><input type="checkbox" name="allergy" value="oeuf" /><span>Œufs</span></label>
+          <label class="check-chip"><input type="checkbox" name="allergy" value="soja" /><span>Soja</span></label>
+          <label class="check-chip"><input type="checkbox" name="allergy" value="fruits_mer" /><span>Fruits de mer</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Ready -->
+    <div class="ob-step" data-step="5">
+      <div class="ob-icon success-pulse">✨</div>
+      <h2 class="ob-title">Tout est <span class="gradient-text">prêt</span> !</h2>
+      <p class="ob-subtitle">Votre plan personnalisé est calculé. Commençons votre transformation.</p>
+      <div class="summary-cards" id="ob-summary"></div>
+    </div>
+
+    <div class="ob-actions">
+      <button class="btn-ghost" id="ob-back-btn" onclick="obBack()" style="display:none">← Retour</button>
+      <button class="btn-primary" id="ob-next-btn" onclick="obNext()">Continuer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="app" class="app hidden">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="app-logo">🌿</span>
+      <span class="app-name">Vitalis</span>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Mode clair/sombre">☀️</button>
+      <button class="icon-btn" onclick="showSection('profile')" title="Profil">👤</button>
+    </div>
+  </header>
+
+  <!-- PWA Install Banner -->
+  <div class="pwa-banner hidden" id="pwa-banner">
+    <span class="pwa-icon">🌿</span>
+    <div class="pwa-text">
+      <strong>Installer Vitalis</strong>
+      <span>Accès rapide depuis votre écran d'accueil</span>
+    </div>
+    <button class="pwa-install-btn" id="pwa-install-btn" onclick="installPWA()">Installer</button>
+    <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
+  </div>
+
+  <!-- Score Banner -->
+  <div class="score-banner" id="score-banner">
+    <div class="score-top-row">
+      <div class="score-greeting" id="score-greeting">Bonjour !</div>
+      <div class="score-level-badge" id="score-level-badge">—</div>
+    </div>
+    <div class="score-main-row">
+      <!-- Big Score Circle -->
+      <div class="score-circle-wrap">
+        <div class="score-circle" id="score-circle">
+          <svg viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="url(#scoreGrad)" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="214" stroke-dashoffset="214"
+              id="score-arc" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease"/>
+            <defs>
+              <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#4ade80"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-circle-inner">
+            <span id="score-value" class="score-number">0</span>
+            <span class="score-over">/100</span>
+          </div>
+        </div>
+        <div class="score-label">Score santé</div>
+      </div>
+
+      <!-- Score Breakdown Pills -->
+      <div class="score-breakdown" id="score-breakdown">
+        <div class="score-pill" id="pill-cal">
+          <span class="pill-icon">🍽️</span>
+          <div class="pill-bar-wrap"><div class="pill-bar" id="pbar-cal"></div></div>
+          <span class="pill-pts" id="ppts-cal">0/25</span>
+        </div>
+        <div class="score-pill" id="pill-prot">
+          <span class="pill-icon">🥩</span>
+          <div class="pill-bar-wrap"><div class="pill-bar" id="pbar-prot"></div></div>
+          <span class="pill-pts" id="ppts-prot">0/20</span>
+        </div>
+        <div class="score-pill" id="pill-water">
+          <span class="pill-icon">💧</span>
+          <div class="pill-bar-wrap"><div class="pill-bar" id="pbar-water"></div></div>
+          <span class="pill-pts" id="ppts-water">0/25</span>
+        </div>
+        <div class="score-pill" id="pill-steps">
+          <span class="pill-icon">👟</span>
+          <div class="pill-bar-wrap"><div class="pill-bar" id="pbar-steps"></div></div>
+          <span class="pill-pts" id="ppts-steps">0/20</span>
+        </div>
+        <div class="score-pill" id="pill-act">
+          <span class="pill-icon">🏃</span>
+          <div class="pill-bar-wrap"><div class="pill-bar" id="pbar-act"></div></div>
+          <span class="pill-pts" id="ppts-act">0/10</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="motivation-quote" id="motivation-quote"></div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="app-main" id="app-main">
+
+    <!-- Dashboard Section -->
+    <section class="section active" id="section-dashboard">
+      <h2 class="section-title">Aujourd'hui</h2>
+
+      <!-- Calories Ring -->
+      <div class="calories-card">
+        <div class="cal-ring-wrap">
+          <svg class="cal-ring" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" id="cal-ring-arc" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="cal-ring-text">
+            <span id="cal-consumed">0</span>
+            <span class="cal-unit">kcal</span>
+          </div>
+        </div>
+        <div class="cal-details">
+          <div class="cal-stat"><span class="cal-stat-label">Objectif</span><span id="cal-goal" class="cal-stat-value">—</span></div>
+          <div class="cal-stat"><span class="cal-stat-label">Restantes</span><span id="cal-remaining" class="cal-stat-value accent">—</span></div>
+          <div class="cal-stat"><span class="cal-stat-label">Brûlées</span><span id="cal-burned" class="cal-stat-value green">—</span></div>
+        </div>
+      </div>
+
+      <!-- Macros -->
+      <h3 class="sub-title">Macronutriments</h3>
+      <div class="macros-grid">
+        <div class="macro-card" data-macro="protein">
+          <div class="macro-header"><span class="macro-icon">🥩</span><span class="macro-name">Protéines</span></div>
+          <div class="macro-bar-wrap"><div class="macro-bar protein-bar" id="bar-protein"></div></div>
+          <div class="macro-values"><span id="val-protein">0g</span><span id="goal-protein" class="macro-goal">/ —g</span></div>
+        </div>
+        <div class="macro-card" data-macro="carbs">
+          <div class="macro-header"><span class="macro-icon">🌾</span><span class="macro-name">Glucides</span></div>
+          <div class="macro-bar-wrap"><div class="macro-bar carbs-bar" id="bar-carbs"></div></div>
+          <div class="macro-values"><span id="val-carbs">0g</span><span id="goal-carbs" class="macro-goal">/ —g</span></div>
+        </div>
+        <div class="macro-card" data-macro="fat">
+          <div class="macro-header"><span class="macro-icon">🥑</span><span class="macro-name">Lipides</span></div>
+          <div class="macro-bar-wrap"><div class="macro-bar fat-bar" id="bar-fat"></div></div>
+          <div class="macro-values"><span id="val-fat">0g</span><span id="goal-fat" class="macro-goal">/ —g</span></div>
+        </div>
+      </div>
+
+      <!-- Water & Steps -->
+      <div class="grid-2">
+        <div class="card water-card">
+          <div class="card-header"><span>💧</span><span>Hydratation</span></div>
+          <div class="water-visual">
+            <div class="water-bottle"><div class="water-fill" id="water-fill"></div></div>
+            <div class="water-text">
+              <span id="water-consumed">0</span><span class="water-unit">L</span>
+              <span id="water-goal-label" class="water-goal">/ —L</span>
+            </div>
+          </div>
+          <div class="water-btns">
+            <button class="water-btn" onclick="addWater(0.15)">+150ml</button>
+            <button class="water-btn" onclick="addWater(0.25)">+250ml</button>
+            <button class="water-btn" onclick="addWater(0.5)">+500ml</button>
+          </div>
+        </div>
+        <div class="card steps-card">
+          <div class="card-header"><span>👟</span><span>Pas</span></div>
+          <div class="steps-display">
+            <span id="steps-today">0</span>
+            <span class="steps-goal" id="steps-goal-label">/ —</span>
+          </div>
+          <div class="macro-bar-wrap"><div class="macro-bar steps-bar" id="bar-steps"></div></div>
+          <button class="btn-secondary small" onclick="promptSteps()">Mettre à jour</button>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <h3 class="sub-title">Ajout rapide</h3>
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="showSection('food')">🍽️ Repas</button>
+        <button class="quick-btn" onclick="showSection('activity')">🏃 Activité</button>
+        <button class="quick-btn" onclick="addWater(0.25)">💧 Eau</button>
+        <button class="quick-btn" onclick="showSection('goals')">🎯 Objectifs</button>
+      </div>
+
+      <!-- Recommendations -->
+      <h3 class="sub-title">Recommandations du jour</h3>
+      <div class="recommendations" id="recommendations"></div>
+    </section>
+
+    <!-- Food Section -->
+    <section class="section" id="section-food">
+      <h2 class="section-title">Journal alimentaire</h2>
+      <div class="food-search-wrap">
+        <input type="text" id="food-search" placeholder="🔍 Rechercher un aliment..." oninput="searchFood(this.value)" />
+        <button class="btn-primary" onclick="openAddFoodModal()">+ Ajouter</button>
+      </div>
+      <div class="food-suggestions hidden" id="food-suggestions"></div>
+
+      <div class="meal-sections">
+        <div class="meal-block" id="meal-breakfast">
+          <div class="meal-title"><span>🌅</span> Petit-déjeuner <span class="meal-cal" id="cal-breakfast">0 kcal</span></div>
+          <div class="meal-items" id="items-breakfast"></div>
+          <button class="add-meal-btn" onclick="openAddFoodModal('breakfast')">+ Ajouter un aliment</button>
+        </div>
+        <div class="meal-block" id="meal-lunch">
+          <div class="meal-title"><span>☀️</span> Déjeuner <span class="meal-cal" id="cal-lunch">0 kcal</span></div>
+          <div class="meal-items" id="items-lunch"></div>
+          <button class="add-meal-btn" onclick="openAddFoodModal('lunch')">+ Ajouter un aliment</button>
+        </div>
+        <div class="meal-block" id="meal-dinner">
+          <div class="meal-title"><span>🌙</span> Dîner <span class="meal-cal" id="cal-dinner">0 kcal</span></div>
+          <div class="meal-items" id="items-dinner"></div>
+          <button class="add-meal-btn" onclick="openAddFoodModal('dinner')">+ Ajouter un aliment</button>
+        </div>
+        <div class="meal-block" id="meal-snack">
+          <div class="meal-title"><span>🍎</span> Collations <span class="meal-cal" id="cal-snack">0 kcal</span></div>
+          <div class="meal-items" id="items-snack"></div>
+          <button class="add-meal-btn" onclick="openAddFoodModal('snack')">+ Ajouter un aliment</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Section -->
+    <section class="section" id="section-activity">
+      <h2 class="section-title">Activité physique</h2>
+      <div class="activity-summary">
+        <div class="act-stat-card"><span class="act-stat-val" id="act-total-cal">0</span><span class="act-stat-lbl">kcal brûlées</span></div>
+        <div class="act-stat-card"><span class="act-stat-val" id="act-total-min">0</span><span class="act-stat-lbl">minutes</span></div>
+      </div>
+      <div class="activity-types">
+        <button class="act-type-btn" onclick="openActivityModal('marche')">🚶 Marche</button>
+        <button class="act-type-btn" onclick="openActivityModal('course')">🏃 Course</button>
+        <button class="act-type-btn" onclick="openActivityModal('velo')">🚴 Vélo</button>
+        <button class="act-type-btn" onclick="openActivityModal('musculation')">💪 Muscu</button>
+        <button class="act-type-btn" onclick="openActivityModal('natation')">🏊 Natation</button>
+        <button class="act-type-btn" onclick="openActivityModal('yoga')">🧘 Yoga</button>
+        <button class="act-type-btn" onclick="openActivityModal('autre')">➕ Autre</button>
+      </div>
+      <h3 class="sub-title">Historique du jour</h3>
+      <div id="activity-list" class="activity-list"></div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section" id="section-stats">
+      <h2 class="section-title">Statistiques</h2>
+      <div class="stats-tabs">
+        <button class="stats-tab active" onclick="switchStatTab('weight', this)">Poids</button>
+        <button class="stats-tab" onclick="switchStatTab('calories', this)">Calories</button>
+        <button class="stats-tab" onclick="switchStatTab('water', this)">Eau</button>
+        <button class="stats-tab" onclick="switchStatTab('steps', this)">Pas</button>
+      </div>
+      <div class="chart-container">
+        <canvas id="stat-chart"></canvas>
+        <div class="chart-empty" id="chart-empty">Pas encore de données</div>
+      </div>
+      <div class="weight-log-section">
+        <h3 class="sub-title">Enregistrer le poids</h3>
+        <div class="weight-input-row">
+          <input type="number" id="weight-input" placeholder="kg" step="0.1" />
+          <button class="btn-primary" onclick="logWeight()">Enregistrer</button>
+        </div>
+      </div>
+      <div class="export-section">
+        <h3 class="sub-title">Exporter mes données</h3>
+        <div class="export-btns">
+          <button class="btn-secondary" onclick="exportCSV()">📊 CSV</button>
+          <button class="btn-secondary" onclick="exportPDF()">📄 PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Goals Section -->
+    <section class="section" id="section-goals">
+      <h2 class="section-title">Mes objectifs</h2>
+      <div class="goals-list" id="goals-list"></div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="section" id="section-profile">
+      <h2 class="section-title">Mon profil</h2>
+      <div class="profile-card">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar" onclick="changeAvatar()">
+            <span id="avatar-initials"></span>
+            <div class="avatar-overlay">📷</div>
+          </div>
+          <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarChange(event)" />
+        </div>
+        <div class="profile-name" id="profile-name-display"></div>
+        <div class="profile-stats-row">
+          <div class="ps-item"><span id="ps-imc">—</span><span>IMC</span></div>
+          <div class="ps-item"><span id="ps-cal">—</span><span>kcal/j</span></div>
+          <div class="ps-item"><span id="ps-water">—</span><span>eau/j</span></div>
+        </div>
+      </div>
+      <h3 class="sub-title">Informations</h3>
+      <div class="info-list" id="profile-info-list"></div>
+      <button class="btn-danger" onclick="resetApp()">🗑️ Réinitialiser l'application</button>
+    </section>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-section="dashboard" onclick="showSection('dashboard')">
+      <span class="nav-icon">🏠</span><span class="nav-label">Accueil</span>
+    </button>
+    <button class="nav-btn" data-section="food" onclick="showSection('food')">
+      <span class="nav-icon">🍽️</span><span class="nav-label">Repas</span>
+    </button>
+    <button class="nav-btn" data-section="activity" onclick="showSection('activity')">
+      <span class="nav-icon">🏃</span><span class="nav-label">Sport</span>
+    </button>
+    <button class="nav-btn" data-section="stats" onclick="showSection('stats')">
+      <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
+    </button>
+    <button class="nav-btn" data-section="goals" onclick="showSection('goals')">
+      <span class="nav-icon">🎯</span><span class="nav-label">Objectifs</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Add Food Modal -->
+<div class="modal-overlay hidden" id="modal-food">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Ajouter un aliment</h3>
+      <button class="modal-close" onclick="closeModal('modal-food')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Repas</label>
+        <select id="food-meal-select">
+          <option value="breakfast">Petit-déjeuner</option>
+          <option value="lunch">Déjeuner</option>
+          <option value="dinner">Dîner</option>
+          <option value="snack">Collation</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nom de l'aliment</label>
+        <input type="text" id="food-name" placeholder="Ex : Poulet grillé" />
+      </div>
+      <div class="form-group">
+        <label>Quantité (g ou ml)</label>
+        <input type="number" id="food-qty" placeholder="100" min="1" />
+      </div>
+      <div class="macros-input-grid">
+        <div class="form-group">
+          <label>Calories</label>
+          <input type="number" id="food-cal" placeholder="kcal" min="0" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label>Protéines (g)</label>
+          <input type="number" id="food-prot" placeholder="g" min="0" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label>Glucides (g)</label>
+          <input type="number" id="food-carb" placeholder="g" min="0" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label>Lipides (g)</label>
+          <input type="number" id="food-fat-input" placeholder="g" min="0" step="0.1" />
+        </div>
+      </div>
+      <div class="frequent-foods-section">
+        <p class="freq-title">Aliments fréquents</p>
+        <div id="frequent-foods-list" class="frequent-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-food')">Annuler</button>
+      <button class="btn-primary" onclick="addFood()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Activity Modal -->
+<div class="modal-overlay hidden" id="modal-activity">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="activity-modal-title">Ajouter une activité</h3>
+      <button class="modal-close" onclick="closeModal('modal-activity')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Durée (minutes)</label>
+        <input type="number" id="act-duration" placeholder="30" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Intensité</label>
+        <select id="act-intensity">
+          <option value="faible">Faible</option>
+          <option value="modere" selected>Modérée</option>
+          <option value="eleve">Élevée</option>
+          <option value="tres_eleve">Très élevée</option>
+        </select>
+      </div>
+      <div class="form-group" id="act-custom-name-group" style="display:none">
+        <label>Nom de l'activité</label>
+        <input type="text" id="act-custom-name" placeholder="Ex : Tennis" />
+      </div>
+      <div class="cal-preview-wrap">
+        <span class="cal-preview-label">Calories estimées :</span>
+        <span class="cal-preview-value" id="cal-preview">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-activity')">Annuler</button>
+      <button class="btn-primary" onclick="addActivity()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Steps Modal -->
+<div class="modal-overlay hidden" id="modal-steps">
+  <div class="modal small">
+    <div class="modal-header">
+      <h3>Nombre de pas</h3>
+      <button class="modal-close" onclick="closeModal('modal-steps')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <input type="number" id="steps-input" placeholder="Ex : 8500" min="0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-steps')">Annuler</button>
+      <button class="btn-primary" onclick="saveSteps()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="script.js"></script>
+<script>
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('✅ SW registered:', reg.scope))
+      .catch(err => console.warn('SW error:', err));
+  });
+}
+</script>
+</body>
+</html>
