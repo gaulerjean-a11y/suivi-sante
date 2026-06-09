@@ -6,6 +6,109 @@
 'use strict';
 
 // ============================================================
+// SUPABASE CONFIG & AUTH
+// ============================================================
+
+const SUPABASE_URL = 'https://lliyxsrklbzvlpgnjcoi.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_v3xQi958Oj4g2gHWXRBmgg_9Tk822ky';
+const _supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let _currentUser = null;
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+  });
+  document.getElementById('auth-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('auth-signup').classList.toggle('hidden', tab !== 'signup');
+}
+
+function showAuthError(formId, msg) {
+  const el = document.getElementById(formId + '-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function setAuthLoading(loading) {
+  document.getElementById('auth-loading').classList.toggle('hidden', !loading);
+  document.querySelectorAll('#auth-screen button').forEach(b => b.disabled = loading);
+}
+
+async function authLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  document.getElementById('login-error').classList.add('hidden');
+  if (!email || !password) return showAuthError('login', 'Remplis tous les champs');
+  setAuthLoading(true);
+  const { error } = await _supa.auth.signInWithPassword({ email, password });
+  setAuthLoading(false);
+  if (error) showAuthError('login', error.message);
+}
+
+async function authSignup() {
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  document.getElementById('signup-error').classList.add('hidden');
+  if (!email || !password) return showAuthError('signup', 'Remplis tous les champs');
+  if (password.length < 6) return showAuthError('signup', 'Mot de passe trop court (6 caractères min)');
+  setAuthLoading(true);
+  const { error } = await _supa.auth.signUp({ email, password });
+  setAuthLoading(false);
+  if (error) showAuthError('signup', error.message);
+  else { switchAuthTab('login'); showAuthError('login', '✅ Compte créé ! Connecte-toi maintenant.'); }
+}
+
+async function authLogout() {
+  await _supa.auth.signOut();
+  _currentUser = null;
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('onboarding').classList.add('hidden');
+}
+
+async function saveDataCloud(data) {
+  if (!_currentUser) return;
+  try {
+    await _supa.from('user_data').upsert({
+      user_id: _currentUser.id,
+      data: data,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+  } catch(e) { console.warn('Cloud save failed:', e); }
+}
+
+async function loadDataCloud() {
+  if (!_currentUser) return null;
+  try {
+    const { data, error } = await _supa.from('user_data')
+      .select('data')
+      .eq('user_id', _currentUser.id)
+      .single();
+    if (error || !data) return null;
+    return data.data;
+  } catch(e) { return null; }
+}
+
+function bootAuth() {
+  _supa.auth.onAuthStateChange(async (event, session) => {
+    if (session && session.user) {
+      _currentUser = session.user;
+      document.getElementById('auth-screen').classList.add('hidden');
+      const cloudData = await loadDataCloud();
+      if (cloudData) {
+        localStorage.setItem('vitalis_v3', JSON.stringify(cloudData));
+      }
+      initApp();
+    } else {
+      _currentUser = null;
+      document.getElementById('auth-screen').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('onboarding').classList.add('hidden');
+    }
+  });
+}
+
+// ============================================================
 // CONSTANTS & CONFIG
 // ============================================================
 
@@ -605,6 +708,7 @@ function loadData() {
 }
 
 function saveData(data) {
+  saveDataCloud(data); // sync cloud
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -1842,7 +1946,7 @@ function formatDateShort(dateStr) {
 // BOOT
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', bootAuth);
 
 // ============================================================
 // HEALTH SCORE — ENHANCED RENDER

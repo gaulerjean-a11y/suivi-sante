@@ -15,6 +15,32 @@
 </head>
 <body>
 
+<!-- ========== AUTH SCREEN ========== -->
+<div id="auth-screen" class="auth-overlay">
+  <div class="auth-container">
+    <div class="auth-logo">🌿</div>
+    <h1 class="auth-title"><span class="gradient-text">Vitalis</span></h1>
+    <p class="auth-subtitle">Ton compagnon santé intelligent</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Inscription</button>
+    </div>
+    <div id="auth-login" class="auth-form">
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="toi@email.com" autocomplete="email" /></div>
+      <div class="form-group"><label>Mot de passe</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" /></div>
+      <button class="btn-primary btn-full" onclick="authLogin()">Se connecter</button>
+      <div class="auth-error hidden" id="login-error"></div>
+    </div>
+    <div id="auth-signup" class="auth-form hidden">
+      <div class="form-group"><label>Email</label><input type="email" id="signup-email" placeholder="toi@email.com" autocomplete="email" /></div>
+      <div class="form-group"><label>Mot de passe</label><input type="password" id="signup-password" placeholder="Min. 6 caractères" autocomplete="new-password" /></div>
+      <button class="btn-primary btn-full" onclick="authSignup()">Créer mon compte</button>
+      <div class="auth-error hidden" id="signup-error"></div>
+    </div>
+    <div class="auth-loading hidden" id="auth-loading"><div class="auth-spinner"></div><span>Connexion…</span></div>
+  </div>
+</div>
+
 <!-- ========== ONBOARDING ========== -->
 <div id="onboarding" class="onboarding-overlay hidden">
   <div class="onboarding-container">
@@ -431,12 +457,13 @@
         <h3 class="sub-title">IA — Clé API Anthropic</h3>
         <p class="api-key-desc">Nécessaire pour l'analyse automatique des macros. <a href="https://console.anthropic.com" target="_blank">Obtenir une clé →</a></p>
         <div class="api-key-row">
-          <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off" />
+          <input type="password" id="api-key-input" placeholder="AQ… / sk-or-… / gsk_…" autocomplete="off" />
           <button class="btn-primary" onclick="saveApiKey()">Sauvegarder</button>
         </div>
         <div class="api-key-status" id="api-key-status"></div>
       </div>
 
+      <button class="btn-secondary" onclick="authLogout()" style="margin-bottom:0.75rem;width:100%">🚪 Se déconnecter</button>
       <button class="btn-danger" onclick="resetApp()">🗑️ Réinitialiser l'application</button>
     </section>
 
@@ -614,6 +641,7 @@
 <!-- Toast -->
 <div class="toast hidden" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="script.js"></script>
 <script>
 // Register Service Worker
