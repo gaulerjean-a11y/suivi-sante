@@ -181,7 +181,7 @@
             <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="7"/>
             <circle cx="40" cy="40" r="34" fill="none" stroke="url(#scoreGrad)" stroke-width="7"
               stroke-linecap="round" stroke-dasharray="214" stroke-dashoffset="214"
-              id="score-arc" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease"/>
+              id="score-arc" style="transform:rotate(-90deg);transform-origin:center"/>
             <defs>
               <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#4ade80"/>
@@ -455,12 +455,13 @@
 
 <!-- Add Food Modal -->
 <div class="modal-overlay hidden" id="modal-food">
-  <div class="modal">
+  <div class="modal modal-food-large">
     <div class="modal-header">
       <h3>Ajouter un aliment</h3>
       <button class="modal-close" onclick="closeModal('modal-food')">✕</button>
     </div>
     <div class="modal-body">
+      <!-- Meal selector -->
       <div class="form-group">
         <label>Repas</label>
         <select id="food-meal-select">
@@ -470,34 +471,58 @@
           <option value="snack">Collation</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Nom de l'aliment</label>
-        <input type="text" id="food-name" placeholder="Ex : Poulet grillé" />
+
+      <!-- Search bar -->
+      <div class="food-search-wrap">
+        <span class="food-search-icon">🔍</span>
+        <input type="text" id="food-search-input" placeholder="Rechercher parmi 500 aliments…"
+          oninput="searchFoodLive(this.value)" autocomplete="off" />
+        <button class="food-search-clear hidden" id="food-search-clear" onclick="clearFoodSearch()">✕</button>
       </div>
-      <div class="form-group">
-        <label>Quantité (g ou ml)</label>
-        <input type="number" id="food-qty" placeholder="100" min="1" />
+
+      <!-- Search results dropdown -->
+      <div class="food-results-panel" id="food-results-panel">
+        <!-- filled by JS -->
       </div>
-      <div class="macros-input-grid">
+
+      <!-- Divider -->
+      <div class="food-form-divider" id="food-form-divider">
+        <span>ou saisir manuellement</span>
+      </div>
+
+      <!-- Manual form -->
+      <div id="food-manual-form">
         <div class="form-group">
-          <label>Calories</label>
-          <input type="number" id="food-cal" placeholder="kcal" min="0" step="0.1" />
+          <label>Nom de l'aliment</label>
+          <input type="text" id="food-name" placeholder="Ex : Poulet grillé" />
         </div>
         <div class="form-group">
-          <label>Protéines (g)</label>
-          <input type="number" id="food-prot" placeholder="g" min="0" step="0.1" />
+          <label>Quantité (g ou ml)</label>
+          <input type="number" id="food-qty" placeholder="100" min="1" oninput="recalcFromQty()" />
         </div>
-        <div class="form-group">
-          <label>Glucides (g)</label>
-          <input type="number" id="food-carb" placeholder="g" min="0" step="0.1" />
-        </div>
-        <div class="form-group">
-          <label>Lipides (g)</label>
-          <input type="number" id="food-fat-input" placeholder="g" min="0" step="0.1" />
+        <div class="macros-input-grid">
+          <div class="form-group">
+            <label>Calories</label>
+            <input type="number" id="food-cal" placeholder="kcal" min="0" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Protéines (g)</label>
+            <input type="number" id="food-prot" placeholder="g" min="0" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Glucides (g)</label>
+            <input type="number" id="food-carb" placeholder="g" min="0" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Lipides (g)</label>
+            <input type="number" id="food-fat-input" placeholder="g" min="0" step="0.1" />
+          </div>
         </div>
       </div>
-      <div class="frequent-foods-section">
-        <p class="freq-title">Aliments fréquents</p>
+
+      <!-- Frequent foods -->
+      <div class="frequent-foods-section" id="frequent-foods-section">
+        <p class="freq-title">Mes aliments fréquents</p>
         <div id="frequent-foods-list" class="frequent-list"></div>
       </div>
     </div>

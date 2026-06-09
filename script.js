@@ -35,28 +35,358 @@ const ACTIVITY_META = {
   autre:       { icon: '🏅', label: 'Activité',    calPerMin: { faible: 4, modere: 6, eleve: 8, tres_eleve: 10 } },
 };
 
+// ============================================================
+// FOOD DATABASE — 500 aliments (pour 100g sauf mention)
+// { name, cal, prot, carb, fat, unit?, cat }
+// ============================================================
 const FOOD_DB = [
-  { name: 'Blanc de poulet (100g)', cal: 165, prot: 31, carb: 0, fat: 3.6 },
-  { name: 'Riz cuit (100g)', cal: 130, prot: 2.7, carb: 28, fat: 0.3 },
-  { name: 'Œuf entier', cal: 78, prot: 6, carb: 0.6, fat: 5 },
-  { name: 'Saumon (100g)', cal: 208, prot: 20, carb: 0, fat: 13 },
-  { name: 'Avocat (100g)', cal: 160, prot: 2, carb: 9, fat: 15 },
-  { name: 'Banane', cal: 89, prot: 1.1, carb: 23, fat: 0.3 },
-  { name: 'Yaourt grec (100g)', cal: 59, prot: 10, carb: 3.6, fat: 0.4 },
-  { name: 'Flocons d\'avoine (100g)', cal: 389, prot: 17, carb: 66, fat: 7 },
-  { name: 'Lait écrémé (250ml)', cal: 86, prot: 8.7, carb: 12, fat: 0.4 },
-  { name: 'Amandes (30g)', cal: 174, prot: 6, carb: 6, fat: 15 },
-  { name: 'Épinards (100g)', cal: 23, prot: 2.9, carb: 3.6, fat: 0.4 },
-  { name: 'Brocoli (100g)', cal: 34, prot: 2.8, carb: 7, fat: 0.4 },
-  { name: 'Pomme de terre (100g)', cal: 77, prot: 2, carb: 17, fat: 0.1 },
-  { name: 'Thon en boîte (100g)', cal: 116, prot: 25, carb: 0, fat: 1 },
-  { name: 'Pain complet (tranche)', cal: 69, prot: 3.6, carb: 12, fat: 1 },
-  { name: 'Fromage blanc 0% (100g)', cal: 45, prot: 7.5, carb: 4.1, fat: 0.1 },
-  { name: 'Quinoa cuit (100g)', cal: 120, prot: 4.4, carb: 21, fat: 1.9 },
-  { name: 'Lentilles cuites (100g)', cal: 116, prot: 9, carb: 20, fat: 0.4 },
-  { name: 'Steak haché 5% (100g)', cal: 121, prot: 21, carb: 0, fat: 5 },
-  { name: 'Fraises (100g)', cal: 32, prot: 0.7, carb: 7.7, fat: 0.3 },
+  // ── VIANDES & VOLAILLES ──
+  { name:'Blanc de poulet',        cal:110, prot:23,  carb:0,   fat:1.2,  cat:'🍗 Viandes' },
+  { name:'Cuisse de poulet',       cal:153, prot:18,  carb:0,   fat:8.5,  cat:'🍗 Viandes' },
+  { name:'Dinde hachée 5%',        cal:120, prot:22,  carb:0,   fat:3.5,  cat:'🍗 Viandes' },
+  { name:'Escalope de dinde',      cal:104, prot:22,  carb:0,   fat:1.5,  cat:'🍗 Viandes' },
+  { name:'Blanc de dinde fumé',    cal:109, prot:20,  carb:1,   fat:2.5,  cat:'🍗 Viandes' },
+  { name:'Steak haché 5%',         cal:121, prot:21,  carb:0,   fat:5,    cat:'🥩 Bœuf' },
+  { name:'Steak haché 15%',        cal:195, prot:17,  carb:0,   fat:14,   cat:'🥩 Bœuf' },
+  { name:'Rumsteck',               cal:140, prot:22,  carb:0,   fat:6,    cat:'🥩 Bœuf' },
+  { name:'Entrecôte de bœuf',      cal:200, prot:19,  carb:0,   fat:14,   cat:'🥩 Bœuf' },
+  { name:'Filet de bœuf',          cal:135, prot:22,  carb:0,   fat:5,    cat:'🥩 Bœuf' },
+  { name:'Bavette de bœuf',        cal:155, prot:21,  carb:0,   fat:8,    cat:'🥩 Bœuf' },
+  { name:'Côte de bœuf',           cal:220, prot:20,  carb:0,   fat:15,   cat:'🥩 Bœuf' },
+  { name:'Bœuf bourguignon',       cal:155, prot:16,  carb:4,   fat:8,    cat:'🥩 Bœuf' },
+  { name:'Côtelette de porc',       cal:215, prot:19,  carb:0,   fat:15,   cat:'🐷 Porc' },
+  { name:'Filet de porc',          cal:143, prot:22,  carb:0,   fat:6,    cat:'🐷 Porc' },
+  { name:'Jambon blanc dégraissé', cal:105, prot:17,  carb:1.5, fat:3.5,  cat:'🐷 Porc' },
+  { name:'Jambon cru',             cal:145, prot:25,  carb:0.5, fat:5,    cat:'🐷 Porc' },
+  { name:'Lardons fumés',          cal:330, prot:14,  carb:0.5, fat:30,   cat:'🐷 Porc' },
+  { name:'Saucisse de Francfort',  cal:260, prot:12,  carb:2,   fat:23,   cat:'🐷 Porc' },
+  { name:'Merguez',                cal:280, prot:13,  carb:2,   fat:25,   cat:'🐷 Porc' },
+  { name:'Chorizo',                cal:450, prot:25,  carb:2,   fat:38,   cat:'🐷 Porc' },
+  { name:'Côtelette d\'agneau',    cal:250, prot:20,  carb:0,   fat:18,   cat:'🐑 Agneau' },
+  { name:'Gigot d\'agneau',        cal:191, prot:22,  carb:0,   fat:11,   cat:'🐑 Agneau' },
+  { name:'Foie de veau',           cal:140, prot:20,  carb:4,   fat:4.5,  cat:'🥩 Abats' },
+  { name:'Foie de poulet',         cal:130, prot:19,  carb:0.7, fat:5,    cat:'🥩 Abats' },
+  { name:'Boudin noir',            cal:250, prot:12,  carb:7,   fat:20,   cat:'🥩 Abats' },
+  { name:'Rillettes de porc',      cal:430, prot:15,  carb:1,   fat:42,   cat:'🐷 Porc' },
+  { name:'Pâté de campagne',       cal:340, prot:14,  carb:5,   fat:29,   cat:'🥩 Charcuterie' },
+  // ── POISSONS & FRUITS DE MER ──
+  { name:'Saumon atlantique',      cal:208, prot:20,  carb:0,   fat:13,   cat:'🐟 Poissons' },
+  { name:'Saumon fumé',            cal:170, prot:25,  carb:0,   fat:8,    cat:'🐟 Poissons' },
+  { name:'Thon au naturel',        cal:116, prot:25,  carb:0,   fat:1,    cat:'🐟 Poissons' },
+  { name:'Thon à l\'huile',        cal:190, prot:26,  carb:0,   fat:10,   cat:'🐟 Poissons' },
+  { name:'Cabillaud',              cal:82,  prot:18,  carb:0,   fat:0.7,  cat:'🐟 Poissons' },
+  { name:'Lieu noir',              cal:78,  prot:17,  carb:0,   fat:0.5,  cat:'🐟 Poissons' },
+  { name:'Merlan',                 cal:75,  prot:17,  carb:0,   fat:0.5,  cat:'🐟 Poissons' },
+  { name:'Dorade',                 cal:100, prot:20,  carb:0,   fat:2,    cat:'🐟 Poissons' },
+  { name:'Bar (loup)',             cal:97,  prot:19,  carb:0,   fat:2,    cat:'🐟 Poissons' },
+  { name:'Truite',                 cal:141, prot:20,  carb:0,   fat:6.5,  cat:'🐟 Poissons' },
+  { name:'Maquereau',              cal:205, prot:19,  carb:0,   fat:14,   cat:'🐟 Poissons' },
+  { name:'Hareng mariné',          cal:158, prot:18,  carb:0,   fat:9,    cat:'🐟 Poissons' },
+  { name:'Sardines à l\'huile',    cal:208, prot:25,  carb:0,   fat:12,   cat:'🐟 Poissons' },
+  { name:'Anchois',                cal:131, prot:20,  carb:0,   fat:5,    cat:'🐟 Poissons' },
+  { name:'Sole',                   cal:85,  prot:17,  carb:0,   fat:1.5,  cat:'🐟 Poissons' },
+  { name:'Flétan',                 cal:110, prot:21,  carb:0,   fat:2.5,  cat:'🐟 Poissons' },
+  { name:'Crevettes décortiquées', cal:90,  prot:18,  carb:1.5, fat:1,    cat:'🦐 Fruits de mer' },
+  { name:'Moules',                 cal:86,  prot:12,  carb:4,   fat:2,    cat:'🦐 Fruits de mer' },
+  { name:'Coquilles Saint-Jacques', cal:88, prot:17,  carb:3,   fat:1,    cat:'🦐 Fruits de mer' },
+  { name:'Calamars',               cal:92,  prot:16,  carb:3,   fat:1.5,  cat:'🦐 Fruits de mer' },
+  { name:'Huîtres',                cal:70,  prot:9,   carb:4,   fat:2,    cat:'🦐 Fruits de mer' },
+  { name:'Crabe',                  cal:87,  prot:19,  carb:0,   fat:1,    cat:'🦐 Fruits de mer' },
+  { name:'Homard',                 cal:89,  prot:19,  carb:0.5, fat:1,    cat:'🦐 Fruits de mer' },
+  { name:'Surimi',                 cal:100, prot:8,   carb:12,  fat:1,    cat:'🦐 Fruits de mer' },
+  // ── ŒUFS & LAITIERS ──
+  { name:'Œuf entier',             cal:78,  prot:6,   carb:0.6, fat:5,    cat:'🥚 Œufs', unit:'pièce' },
+  { name:'Blanc d\'œuf',           cal:17,  prot:3.6, carb:0.2, fat:0,    cat:'🥚 Œufs', unit:'pièce' },
+  { name:'Jaune d\'œuf',           cal:55,  prot:2.7, carb:0.3, fat:4.5,  cat:'🥚 Œufs', unit:'pièce' },
+  { name:'Omelette nature',        cal:154, prot:10,  carb:0.5, fat:12,   cat:'🥚 Œufs' },
+  { name:'Lait entier',            cal:62,  prot:3.2, carb:4.8, fat:3.5,  cat:'🥛 Laitiers' },
+  { name:'Lait demi-écrémé',       cal:46,  prot:3.2, carb:4.8, fat:1.5,  cat:'🥛 Laitiers' },
+  { name:'Lait écrémé',            cal:35,  prot:3.4, carb:4.9, fat:0.1,  cat:'🥛 Laitiers' },
+  { name:'Lait végétal soja',      cal:40,  prot:3.3, carb:2.5, fat:2,    cat:'🥛 Laitiers' },
+  { name:'Lait d\'amande',         cal:24,  prot:0.5, carb:3,   fat:1,    cat:'🥛 Laitiers' },
+  { name:'Lait d\'avoine',         cal:45,  prot:1,   carb:7,   fat:1.5,  cat:'🥛 Laitiers' },
+  { name:'Yaourt nature',          cal:58,  prot:4,   carb:5,   fat:2.5,  cat:'🥛 Laitiers' },
+  { name:'Yaourt grec 0%',         cal:53,  prot:9,   carb:4,   fat:0.2,  cat:'🥛 Laitiers' },
+  { name:'Yaourt grec entier',     cal:100, prot:9,   carb:3.9, fat:5,    cat:'🥛 Laitiers' },
+  { name:'Skyr nature',            cal:63,  prot:11,  carb:4,   fat:0.2,  cat:'🥛 Laitiers' },
+  { name:'Fromage blanc 0%',       cal:45,  prot:7.5, carb:4.1, fat:0.1,  cat:'🥛 Laitiers' },
+  { name:'Fromage blanc 3%',       cal:60,  prot:7,   carb:4.5, fat:3,    cat:'🥛 Laitiers' },
+  { name:'Faisselle',              cal:45,  prot:6,   carb:3.5, fat:1,    cat:'🥛 Laitiers' },
+  { name:'Cottage cheese',         cal:85,  prot:11,  carb:3,   fat:3,    cat:'🥛 Laitiers' },
+  { name:'Ricotta',                cal:174, prot:11,  carb:3,   fat:13,   cat:'🧀 Fromages' },
+  { name:'Mozzarella',             cal:260, prot:18,  carb:2,   fat:21,   cat:'🧀 Fromages' },
+  { name:'Emmental',               cal:380, prot:29,  carb:0.5, fat:29,   cat:'🧀 Fromages' },
+  { name:'Gruyère',                cal:413, prot:30,  carb:0,   fat:33,   cat:'🧀 Fromages' },
+  { name:'Comté',                  cal:407, prot:28,  carb:0,   fat:33,   cat:'🧀 Fromages' },
+  { name:'Camembert',              cal:300, prot:21,  carb:0.5, fat:24,   cat:'🧀 Fromages' },
+  { name:'Brie',                   cal:334, prot:21,  carb:0,   fat:28,   cat:'🧀 Fromages' },
+  { name:'Chèvre frais',           cal:230, prot:13,  carb:1,   fat:20,   cat:'🧀 Fromages' },
+  { name:'Feta',                   cal:264, prot:14,  carb:4,   fat:21,   cat:'🧀 Fromages' },
+  { name:'Parmesan',               cal:431, prot:38,  carb:3,   fat:29,   cat:'🧀 Fromages' },
+  { name:'Gouda',                  cal:356, prot:25,  carb:2,   fat:28,   cat:'🧀 Fromages' },
+  { name:'Roquefort',              cal:370, prot:21,  carb:2,   fat:31,   cat:'🧀 Fromages' },
+  { name:'Reblochon',              cal:334, prot:21,  carb:0,   fat:28,   cat:'🧀 Fromages' },
+  { name:'Crème fraîche entière',  cal:292, prot:2.5, carb:3,   fat:30,   cat:'🥛 Laitiers' },
+  { name:'Crème fraîche légère',   cal:130, prot:3,   carb:4,   fat:12,   cat:'🥛 Laitiers' },
+  { name:'Beurre',                 cal:745, prot:0.6, carb:0.6, fat:82,   cat:'🥛 Laitiers' },
+  // ── CÉRÉALES & FÉCULENTS ──
+  { name:'Riz blanc cuit',         cal:130, prot:2.7, carb:28,  fat:0.3,  cat:'🌾 Céréales' },
+  { name:'Riz complet cuit',       cal:111, prot:2.6, carb:23,  fat:0.9,  cat:'🌾 Céréales' },
+  { name:'Riz basmati cuit',       cal:129, prot:2.7, carb:27,  fat:0.3,  cat:'🌾 Céréales' },
+  { name:'Riz sauvage cuit',       cal:101, prot:4,   carb:21,  fat:0.3,  cat:'🌾 Céréales' },
+  { name:'Pâtes blanches cuites',  cal:157, prot:5.8, carb:31,  fat:0.9,  cat:'🍝 Pâtes' },
+  { name:'Pâtes complètes cuites', cal:149, prot:5.3, carb:29,  fat:1.1,  cat:'🍝 Pâtes' },
+  { name:'Tagliatelles cuites',    cal:155, prot:5.5, carb:31,  fat:0.8,  cat:'🍝 Pâtes' },
+  { name:'Gnocchi',                cal:173, prot:4,   carb:35,  fat:1.5,  cat:'🍝 Pâtes' },
+  { name:'Quinoa cuit',            cal:120, prot:4.4, carb:21,  fat:1.9,  cat:'🌾 Céréales' },
+  { name:'Boulgour cuit',          cal:83,  prot:3.1, carb:18,  fat:0.2,  cat:'🌾 Céréales' },
+  { name:'Semoule cuite',          cal:120, prot:4,   carb:25,  fat:0.2,  cat:'🌾 Céréales' },
+  { name:'Couscous cuit',          cal:112, prot:3.8, carb:23,  fat:0.2,  cat:'🌾 Céréales' },
+  { name:'Avoine (flocons)',       cal:389, prot:17,  carb:66,  fat:7,    cat:'🌾 Céréales' },
+  { name:'Muesli',                 cal:370, prot:10,  carb:63,  fat:7,    cat:'🌾 Céréales' },
+  { name:'Granola',                cal:450, prot:8,   carb:65,  fat:18,   cat:'🌾 Céréales' },
+  { name:'Corn Flakes',            cal:370, prot:8,   carb:84,  fat:0.5,  cat:'🌾 Céréales' },
+  { name:'Pain blanc (tranche)',   cal:70,  prot:2.5, carb:14,  fat:0.7,  cat:'🍞 Pain' },
+  { name:'Pain complet (tranche)', cal:69,  prot:3.6, carb:12,  fat:1,    cat:'🍞 Pain' },
+  { name:'Pain de seigle',         cal:259, prot:8.5, carb:48,  fat:1.7,  cat:'🍞 Pain' },
+  { name:'Baguette',               cal:263, prot:9,   carb:52,  fat:1.5,  cat:'🍞 Pain' },
+  { name:'Pain de mie nature',     cal:268, prot:8,   carb:49,  fat:4,    cat:'🍞 Pain' },
+  { name:'Pain aux céréales',      cal:255, prot:9,   carb:44,  fat:3.5,  cat:'🍞 Pain' },
+  { name:'Brioche',                cal:390, prot:9,   carb:52,  fat:17,   cat:'🍞 Pain' },
+  { name:'Crêpe nature',           cal:186, prot:5,   carb:28,  fat:6,    cat:'🍞 Pain' },
+  { name:'Galette de blé noir',    cal:190, prot:6,   carb:32,  fat:4,    cat:'🍞 Pain' },
+  { name:'Wrap (tortilla blé)',    cal:305, prot:8,   carb:56,  fat:5,    cat:'🍞 Pain' },
+  { name:'Pomme de terre cuite',   cal:87,  prot:1.8, carb:20,  fat:0.1,  cat:'🥔 Féculents' },
+  { name:'Pomme de terre vapeur',  cal:80,  prot:2,   carb:18,  fat:0.1,  cat:'🥔 Féculents' },
+  { name:'Frites',                 cal:310, prot:3.4, carb:38,  fat:16,   cat:'🥔 Féculents' },
+  { name:'Purée de pommes de terre', cal:83,prot:2,   carb:16,  fat:2,    cat:'🥔 Féculents' },
+  { name:'Patate douce cuite',     cal:90,  prot:1.7, carb:21,  fat:0.1,  cat:'🥔 Féculents' },
+  { name:'Manioc cuit',            cal:155, prot:1,   carb:38,  fat:0.3,  cat:'🥔 Féculents' },
+  { name:'Polenta cuite',          cal:70,  prot:1.5, carb:15,  fat:0.5,  cat:'🥔 Féculents' },
+  // ── LÉGUMINEUSES ──
+  { name:'Lentilles cuites',       cal:116, prot:9,   carb:20,  fat:0.4,  cat:'🫘 Légumineuses' },
+  { name:'Lentilles corail cuites',cal:100, prot:7.5, carb:17,  fat:0.3,  cat:'🫘 Légumineuses' },
+  { name:'Pois chiches cuits',     cal:164, prot:9,   carb:27,  fat:2.6,  cat:'🫘 Légumineuses' },
+  { name:'Haricots rouges cuits',  cal:128, prot:8.7, carb:22,  fat:0.5,  cat:'🫘 Légumineuses' },
+  { name:'Haricots blancs cuits',  cal:139, prot:9.7, carb:25,  fat:0.5,  cat:'🫘 Légumineuses' },
+  { name:'Haricots noirs cuits',   cal:132, prot:8.9, carb:24,  fat:0.5,  cat:'🫘 Légumineuses' },
+  { name:'Edamame',                cal:121, prot:11,  carb:9,   fat:5,    cat:'🫘 Légumineuses' },
+  { name:'Pois cassés cuits',      cal:118, prot:8,   carb:21,  fat:0.4,  cat:'🫘 Légumineuses' },
+  { name:'Fèves cuites',           cal:110, prot:8,   carb:19,  fat:0.4,  cat:'🫘 Légumineuses' },
+  { name:'Tofu ferme',             cal:76,  prot:8,   carb:1.9, fat:4.2,  cat:'🫘 Légumineuses' },
+  { name:'Tofu soyeux',            cal:55,  prot:5,   carb:2.5, fat:3,    cat:'🫘 Légumineuses' },
+  { name:'Tempeh',                 cal:193, prot:19,  carb:9,   fat:11,   cat:'🫘 Légumineuses' },
+  { name:'Seitan',                 cal:370, prot:75,  carb:14,  fat:1.9,  cat:'🫘 Légumineuses' },
+  { name:'Hummus',                 cal:166, prot:8,   carb:14,  fat:9.6,  cat:'🫘 Légumineuses' },
+  // ── LÉGUMES ──
+  { name:'Épinards crus',          cal:23,  prot:2.9, carb:3.6, fat:0.4,  cat:'🥦 Légumes' },
+  { name:'Épinards cuits',         cal:35,  prot:3.6, carb:3.8, fat:0.5,  cat:'🥦 Légumes' },
+  { name:'Brocoli cru',            cal:34,  prot:2.8, carb:7,   fat:0.4,  cat:'🥦 Légumes' },
+  { name:'Brocoli cuit vapeur',    cal:28,  prot:2.4, carb:5,   fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Chou-fleur',             cal:25,  prot:1.9, carb:5,   fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Chou blanc',             cal:25,  prot:1.3, carb:5.8, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Chou rouge',             cal:31,  prot:1.4, carb:7.4, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Chou de Bruxelles',      cal:43,  prot:3.4, carb:8.9, fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Courgette',              cal:17,  prot:1.2, carb:3.1, fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Concombre',              cal:16,  prot:0.7, carb:3.6, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Tomate',                 cal:18,  prot:0.9, carb:3.9, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Tomates cerises',        cal:18,  prot:0.9, carb:3.9, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Poivron rouge',          cal:31,  prot:1,   carb:7,   fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Poivron vert',           cal:20,  prot:0.9, carb:4.6, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Poivron jaune',          cal:27,  prot:1,   carb:6.3, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Carotte',                cal:41,  prot:0.9, carb:10,  fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Céleri',                 cal:16,  prot:0.7, carb:3,   fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Céleri-rave',            cal:43,  prot:1.5, carb:10,  fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Fenouil',                cal:31,  prot:1.2, carb:7,   fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Asperges',               cal:20,  prot:2.2, carb:3.9, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Artichaut cuit',         cal:53,  prot:3.3, carb:10,  fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Betterave cuite',        cal:44,  prot:1.7, carb:10,  fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Haricots verts cuits',   cal:35,  prot:1.9, carb:7,   fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Petits pois cuits',      cal:84,  prot:5.4, carb:14,  fat:0.4,  cat:'🥦 Légumes' },
+  { name:'Maïs en grains',         cal:96,  prot:3.4, carb:21,  fat:1.5,  cat:'🥦 Légumes' },
+  { name:'Oignon',                 cal:40,  prot:1.1, carb:9.3, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Échalote',               cal:72,  prot:2.5, carb:17,  fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Poireau',                cal:61,  prot:1.5, carb:14,  fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Ail',                    cal:149, prot:6.4, carb:33,  fat:0.5,  cat:'🥦 Légumes' },
+  { name:'Champignons de Paris',   cal:22,  prot:3.1, carb:3.3, fat:0.3,  cat:'🥦 Légumes' },
+  { name:'Champignons shiitake',   cal:34,  prot:2.2, carb:7,   fat:0.5,  cat:'🥦 Légumes' },
+  { name:'Aubergine',              cal:25,  prot:1,   carb:5.7, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Endive',                 cal:17,  prot:1.8, carb:3.1, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Laitue',                 cal:15,  prot:1.4, carb:2.2, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Roquette',               cal:25,  prot:2.6, carb:3.6, fat:0.7,  cat:'🥦 Légumes' },
+  { name:'Mâche',                  cal:13,  prot:2,   carb:1.2, fat:0.4,  cat:'🥦 Légumes' },
+  { name:'Chou kale',              cal:49,  prot:4.3, carb:8.8, fat:0.9,  cat:'🥦 Légumes' },
+  { name:'Bette à carde',          cal:19,  prot:1.8, carb:3.7, fat:0.2,  cat:'🥦 Légumes' },
+  { name:'Navet',                  cal:28,  prot:0.9, carb:6.4, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Radis',                  cal:16,  prot:0.7, carb:3.4, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Potiron',                cal:32,  prot:1,   carb:7.1, fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Butternut (courge)',     cal:45,  prot:1,   carb:11,  fat:0.1,  cat:'🥦 Légumes' },
+  { name:'Avocat',                 cal:160, prot:2,   carb:9,   fat:15,   cat:'🥑 Légumes gras' },
+  { name:'Olive noire',            cal:145, prot:1,   carb:3.8, fat:15,   cat:'🥑 Légumes gras' },
+  { name:'Olive verte',            cal:145, prot:1,   carb:3.8, fat:15,   cat:'🥑 Légumes gras' },
+  // ── FRUITS ──
+  { name:'Pomme',                  cal:52,  prot:0.3, carb:14,  fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Poire',                  cal:57,  prot:0.4, carb:15,  fat:0.1,  cat:'🍎 Fruits' },
+  { name:'Banane',                 cal:89,  prot:1.1, carb:23,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Orange',                 cal:47,  prot:0.9, carb:12,  fat:0.1,  cat:'🍎 Fruits' },
+  { name:'Mandarine',              cal:53,  prot:0.8, carb:13,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Clémentine',             cal:47,  prot:0.9, carb:12,  fat:0.1,  cat:'🍎 Fruits' },
+  { name:'Citron',                 cal:29,  prot:1.1, carb:9,   fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Pamplemousse',           cal:42,  prot:0.8, carb:11,  fat:0.1,  cat:'🍎 Fruits' },
+  { name:'Kiwi',                   cal:61,  prot:1.1, carb:15,  fat:0.5,  cat:'🍎 Fruits' },
+  { name:'Fraises',                cal:32,  prot:0.7, carb:7.7, fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Framboises',             cal:52,  prot:1.2, carb:12,  fat:0.7,  cat:'🍎 Fruits' },
+  { name:'Mûres',                  cal:43,  prot:1.4, carb:10,  fat:0.5,  cat:'🍎 Fruits' },
+  { name:'Myrtilles',              cal:57,  prot:0.7, carb:14,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Cerises',                cal:63,  prot:1.1, carb:16,  fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Pêche',                  cal:39,  prot:0.9, carb:10,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Abricot',                cal:48,  prot:1.4, carb:11,  fat:0.4,  cat:'🍎 Fruits' },
+  { name:'Prune',                  cal:46,  prot:0.7, carb:11,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Raisin blanc',           cal:69,  prot:0.7, carb:18,  fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Raisin noir',            cal:72,  prot:0.7, carb:18,  fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Melon',                  cal:34,  prot:0.8, carb:8,   fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Pastèque',               cal:30,  prot:0.6, carb:7.6, fat:0.2,  cat:'🍎 Fruits' },
+  { name:'Ananas',                 cal:50,  prot:0.5, carb:13,  fat:0.1,  cat:'🍎 Fruits' },
+  { name:'Mangue',                 cal:60,  prot:0.8, carb:15,  fat:0.4,  cat:'🍎 Fruits' },
+  { name:'Papaye',                 cal:43,  prot:0.5, carb:11,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Goyave',                 cal:68,  prot:2.6, carb:14,  fat:1,    cat:'🍎 Fruits' },
+  { name:'Figue fraîche',          cal:74,  prot:0.8, carb:19,  fat:0.3,  cat:'🍎 Fruits' },
+  { name:'Grenade',                cal:83,  prot:1.7, carb:19,  fat:1.2,  cat:'🍎 Fruits' },
+  { name:'Litchi',                 cal:66,  prot:0.8, carb:17,  fat:0.4,  cat:'🍎 Fruits' },
+  { name:'Noix de coco fraîche',   cal:354, prot:3.3, carb:15,  fat:33,   cat:'🍎 Fruits' },
+  { name:'Banane plantain cuite',  cal:122, prot:1.3, carb:32,  fat:0.2,  cat:'🍎 Fruits' },
+  // ── FRUITS SECS & OLÉAGINEUX ──
+  { name:'Amandes',                cal:579, prot:21,  carb:22,  fat:50,   cat:'🥜 Oléagineux' },
+  { name:'Noix de cajou',          cal:553, prot:18,  carb:30,  fat:44,   cat:'🥜 Oléagineux' },
+  { name:'Noix',                   cal:654, prot:15,  carb:14,  fat:65,   cat:'🥜 Oléagineux' },
+  { name:'Noisettes',              cal:628, prot:15,  carb:17,  fat:61,   cat:'🥜 Oléagineux' },
+  { name:'Pistaches',              cal:562, prot:20,  carb:28,  fat:45,   cat:'🥜 Oléagineux' },
+  { name:'Noix de macadamia',      cal:718, prot:8,   carb:14,  fat:76,   cat:'🥜 Oléagineux' },
+  { name:'Noix du Brésil',         cal:659, prot:14,  carb:12,  fat:67,   cat:'🥜 Oléagineux' },
+  { name:'Cacahuètes',             cal:567, prot:26,  carb:16,  fat:49,   cat:'🥜 Oléagineux' },
+  { name:'Graines de chia',        cal:486, prot:17,  carb:42,  fat:31,   cat:'🥜 Oléagineux' },
+  { name:'Graines de lin',         cal:534, prot:18,  carb:29,  fat:42,   cat:'🥜 Oléagineux' },
+  { name:'Graines de tournesol',   cal:584, prot:21,  carb:20,  fat:51,   cat:'🥜 Oléagineux' },
+  { name:'Graines de citrouille',  cal:559, prot:30,  carb:11,  fat:49,   cat:'🥜 Oléagineux' },
+  { name:'Graines de sésame',      cal:573, prot:18,  carb:23,  fat:50,   cat:'🥜 Oléagineux' },
+  { name:'Beurre de cacahuète',    cal:588, prot:25,  carb:20,  fat:50,   cat:'🥜 Oléagineux' },
+  { name:'Beurre d\'amande',       cal:614, prot:21,  carb:19,  fat:56,   cat:'🥜 Oléagineux' },
+  { name:'Raisins secs',           cal:299, prot:3.1, carb:79,  fat:0.5,  cat:'🍇 Fruits secs' },
+  { name:'Abricots secs',          cal:241, prot:3.4, carb:63,  fat:0.5,  cat:'🍇 Fruits secs' },
+  { name:'Pruneaux',               cal:240, prot:2.2, carb:64,  fat:0.4,  cat:'🍇 Fruits secs' },
+  { name:'Dattes',                 cal:277, prot:1.8, carb:75,  fat:0.2,  cat:'🍇 Fruits secs' },
+  { name:'Figues sèches',          cal:249, prot:3.3, carb:64,  fat:0.9,  cat:'🍇 Fruits secs' },
+  { name:'Cranberries séchées',    cal:308, prot:0.1, carb:82,  fat:1,    cat:'🍇 Fruits secs' },
+  // ── HUILES & MATIÈRES GRASSES ──
+  { name:'Huile d\'olive',         cal:884, prot:0,   carb:0,   fat:100,  cat:'🫒 Huiles' },
+  { name:'Huile de colza',         cal:884, prot:0,   carb:0,   fat:100,  cat:'🫒 Huiles' },
+  { name:'Huile de tournesol',     cal:884, prot:0,   carb:0,   fat:100,  cat:'🫒 Huiles' },
+  { name:'Huile de coco',          cal:862, prot:0,   carb:0,   fat:100,  cat:'🫒 Huiles' },
+  { name:'Huile de lin',           cal:884, prot:0,   carb:0,   fat:100,  cat:'🫒 Huiles' },
+  { name:'Margarine',              cal:717, prot:0.2, carb:0.7, fat:80,   cat:'🫒 Huiles' },
+  { name:'Mayonnaise',             cal:680, prot:1.3, carb:0.6, fat:75,   cat:'🫒 Sauces' },
+  { name:'Mayonnaise allégée',     cal:290, prot:1,   carb:7,   fat:28,   cat:'🫒 Sauces' },
+  // ── PRODUITS SUCRÉS ──
+  { name:'Chocolat noir 70%',      cal:600, prot:8,   carb:46,  fat:43,   cat:'🍫 Sucreries' },
+  { name:'Chocolat au lait',       cal:535, prot:7.7, carb:60,  fat:30,   cat:'🍫 Sucreries' },
+  { name:'Chocolat blanc',         cal:539, prot:5.9, carb:59,  fat:32,   cat:'🍫 Sucreries' },
+  { name:'Miel',                   cal:304, prot:0.3, carb:82,  fat:0,    cat:'🍯 Sucrants' },
+  { name:'Sucre blanc',            cal:387, prot:0,   carb:100, fat:0,    cat:'🍯 Sucrants' },
+  { name:'Sucre roux',             cal:377, prot:0,   carb:97,  fat:0,    cat:'🍯 Sucrants' },
+  { name:'Confiture',              cal:250, prot:0.5, carb:65,  fat:0.1,  cat:'🍯 Sucrants' },
+  { name:'Nutella',                cal:539, prot:6,   carb:57,  fat:31,   cat:'🍫 Sucreries' },
+  { name:'Bonbons',                cal:350, prot:0,   carb:88,  fat:0,    cat:'🍫 Sucreries' },
+  { name:'Glace vanille',          cal:207, prot:3.5, carb:24,  fat:11,   cat:'🍦 Glaces' },
+  { name:'Sorbet fraise',          cal:103, prot:0.3, carb:27,  fat:0.1,  cat:'🍦 Glaces' },
+  { name:'Yaourt glacé',           cal:127, prot:3.2, carb:23,  fat:2.5,  cat:'🍦 Glaces' },
+  { name:'Biscuit sec (type Lu)',  cal:430, prot:7,   carb:73,  fat:13,   cat:'🍪 Biscuits' },
+  { name:'Cookie aux pépites',     cal:480, prot:5,   carb:65,  fat:22,   cat:'🍪 Biscuits' },
+  { name:'Madeleine',              cal:415, prot:6,   carb:60,  fat:17,   cat:'🍪 Biscuits' },
+  { name:'Croissant',              cal:406, prot:8.2, carb:45,  fat:21,   cat:'🥐 Viennoiseries' },
+  { name:'Pain au chocolat',       cal:420, prot:7,   carb:50,  fat:22,   cat:'🥐 Viennoiseries' },
+  { name:'Tarte aux pommes',       cal:237, prot:2.3, carb:34,  fat:10,   cat:'🥐 Viennoiseries' },
+  { name:'Gâteau au chocolat',     cal:380, prot:5,   carb:47,  fat:20,   cat:'🍰 Gâteaux' },
+  { name:'Cheesecake',             cal:321, prot:5,   carb:32,  fat:19,   cat:'🍰 Gâteaux' },
+  { name:'Tiramisu',               cal:283, prot:5,   carb:27,  fat:17,   cat:'🍰 Gâteaux' },
+  // ── BOISSONS ──
+  { name:'Eau (plate ou gazeuse)', cal:0,   prot:0,   carb:0,   fat:0,    cat:'🥤 Boissons' },
+  { name:'Café noir',              cal:2,   prot:0.3, carb:0,   fat:0,    cat:'🥤 Boissons' },
+  { name:'Café au lait',           cal:50,  prot:2.5, carb:5,   fat:2,    cat:'🥤 Boissons' },
+  { name:'Thé nature',             cal:1,   prot:0,   carb:0.2, fat:0,    cat:'🥤 Boissons' },
+  { name:'Jus d\'orange',          cal:45,  prot:0.7, carb:10,  fat:0.2,  cat:'🥤 Boissons' },
+  { name:'Jus de pomme',           cal:46,  prot:0.1, carb:11,  fat:0.1,  cat:'🥤 Boissons' },
+  { name:'Jus de carotte',         cal:40,  prot:0.9, carb:9,   fat:0.2,  cat:'🥤 Boissons' },
+  { name:'Smoothie banane',        cal:85,  prot:1,   carb:20,  fat:0.3,  cat:'🥤 Boissons' },
+  { name:'Lait chocolaté',         cal:83,  prot:3.5, carb:12,  fat:2.5,  cat:'🥤 Boissons' },
+  { name:'Soda cola',              cal:42,  prot:0,   carb:11,  fat:0,    cat:'🥤 Boissons' },
+  { name:'Soda light/zero',        cal:1,   prot:0,   carb:0,   fat:0,    cat:'🥤 Boissons' },
+  { name:'Limonade',               cal:40,  prot:0,   carb:10,  fat:0,    cat:'🥤 Boissons' },
+  { name:'Bière (25cl)',           cal:110, prot:0.9, carb:8,   fat:0,    cat:'🍺 Alcool', unit:'verre' },
+  { name:'Vin rouge (12.5cl)',     cal:85,  prot:0.1, carb:2.5, fat:0,    cat:'🍷 Alcool', unit:'verre' },
+  { name:'Vin blanc (12.5cl)',     cal:83,  prot:0.1, carb:2.6, fat:0,    cat:'🍷 Alcool', unit:'verre' },
+  { name:'Champagne (12.5cl)',     cal:93,  prot:0.3, carb:4,   fat:0,    cat:'🍷 Alcool', unit:'verre' },
+  { name:'Whey protéine (vanille)',cal:385, prot:75,  carb:8,   fat:6,    cat:'💪 Sport' },
+  { name:'Whey protéine (choco)',  cal:390, prot:74,  carb:9,   fat:7,    cat:'💪 Sport' },
+  { name:'Boisson isotonique',     cal:27,  prot:0,   carb:6,   fat:0,    cat:'💪 Sport' },
+  // ── PLATS PRÉPARÉS & FAST-FOOD ──
+  { name:'Pizza margherita',       cal:270, prot:11,  carb:33,  fat:10,   cat:'🍕 Fast-food' },
+  { name:'Pizza 4 fromages',       cal:310, prot:14,  carb:30,  fat:15,   cat:'🍕 Fast-food' },
+  { name:'Hamburger simple',       cal:295, prot:17,  carb:24,  fat:14,   cat:'🍔 Fast-food' },
+  { name:'Cheeseburger',           cal:350, prot:18,  carb:26,  fat:18,   cat:'🍔 Fast-food' },
+  { name:'Nuggets de poulet (x6)', cal:280, prot:16,  carb:18,  fat:15,   cat:'🍔 Fast-food' },
+  { name:'Hot-dog',                cal:290, prot:11,  carb:26,  fat:16,   cat:'🍔 Fast-food' },
+  { name:'Sandwich jambon-beurre', cal:290, prot:14,  carb:30,  fat:12,   cat:'🥪 Sandwichs' },
+  { name:'Sandwich poulet-crudités', cal:280,prot:18, carb:31,  fat:9,    cat:'🥪 Sandwichs' },
+  { name:'Wrap thon-avocat',       cal:310, prot:20,  carb:28,  fat:13,   cat:'🥪 Sandwichs' },
+  { name:'Croque-monsieur',        cal:320, prot:16,  carb:28,  fat:15,   cat:'🥪 Sandwichs' },
+  { name:'Quiche lorraine',        cal:290, prot:9,   carb:20,  fat:20,   cat:'🥧 Plats' },
+  { name:'Lasagnes bolognaise',    cal:165, prot:9,   carb:18,  fat:6,    cat:'🍝 Plats' },
+  { name:'Hachis parmentier',      cal:130, prot:8,   carb:15,  fat:4,    cat:'🥘 Plats' },
+  { name:'Poulet rôti',            cal:215, prot:25,  carb:0,   fat:13,   cat:'🍗 Plats' },
+  { name:'Gratin dauphinois',      cal:190, prot:4,   carb:18,  fat:12,   cat:'🥘 Plats' },
+  { name:'Ratatouille',            cal:55,  prot:1.5, carb:9,   fat:2,    cat:'🥘 Plats' },
+  { name:'Soupe de légumes',       cal:42,  prot:1.5, carb:8,   fat:1,    cat:'🥣 Soupes' },
+  { name:'Soupe de tomates',       cal:57,  prot:1.6, carb:10,  fat:1.5,  cat:'🥣 Soupes' },
+  { name:'Velouté potiron',        cal:68,  prot:1.4, carb:12,  fat:2,    cat:'🥣 Soupes' },
+  { name:'Gaspacho',               cal:48,  prot:1.2, carb:9,   fat:1.5,  cat:'🥣 Soupes' },
+  { name:'Taboulé',                cal:165, prot:3,   carb:25,  fat:6,    cat:'🥗 Salades' },
+  { name:'Salade niçoise',         cal:135, prot:10,  carb:8,   fat:7,    cat:'🥗 Salades' },
+  { name:'Salade César',           cal:180, prot:12,  carb:9,   fat:12,   cat:'🥗 Salades' },
+  { name:'Salade grecque',         cal:120, prot:4.5, carb:7,   fat:9,    cat:'🥗 Salades' },
+  // ── CONDIMENTS & SAUCES ──
+  { name:'Ketchup',                cal:112, prot:1.5, carb:27,  fat:0.1,  cat:'🫙 Condiments' },
+  { name:'Moutarde',               cal:66,  prot:4.4, carb:5.9, fat:4,    cat:'🫙 Condiments' },
+  { name:'Sauce soja',             cal:60,  prot:10,  carb:5,   fat:0.1,  cat:'🫙 Condiments' },
+  { name:'Vinaigrette',            cal:460, prot:0.1, carb:2,   fat:50,   cat:'🫙 Condiments' },
+  { name:'Crème de balsamique',    cal:177, prot:0.6, carb:44,  fat:0.1,  cat:'🫙 Condiments' },
+  { name:'Pesto',                  cal:490, prot:6,   carb:8,   fat:49,   cat:'🫙 Condiments' },
+  { name:'Sauce tomate',           cal:35,  prot:1.7, carb:7,   fat:0.4,  cat:'🫙 Condiments' },
+  { name:'Houmous',                cal:166, prot:8,   carb:14,  fat:10,   cat:'🫙 Condiments' },
+  // ── PRODUITS SPORT & SANTÉ ──
+  { name:'Barre protéinée',        cal:210, prot:20,  carb:22,  fat:6,    cat:'💪 Sport', unit:'barre' },
+  { name:'Flocons de quinoa',      cal:368, prot:14,  carb:62,  fat:6,    cat:'💪 Sport' },
+  { name:'Spiruline',              cal:290, prot:57,  carb:24,  fat:8,    cat:'💪 Sport' },
+  { name:'Gainer protéiné',        cal:380, prot:30,  carb:55,  fat:4,    cat:'💪 Sport' },
+  { name:'Caséine (prot. lente)',  cal:370, prot:80,  carb:4,   fat:2,    cat:'💪 Sport' },
+  // ── DIVERS ──
+  { name:'Falafel',                cal:333, prot:13,  carb:32,  fat:18,   cat:'🧆 Divers' },
+  { name:'Sushi (nigiri saumon)',  cal:58,  prot:3.5, carb:9,   fat:1,    cat:'🍣 Divers', unit:'pièce' },
+  { name:'Maki (1 pièce)',         cal:30,  prot:1.5, carb:5,   fat:0.5,  cat:'🍣 Divers', unit:'pièce' },
+  { name:'Nems (1 pièce)',         cal:70,  prot:3,   carb:7,   fat:3.5,  cat:'🥟 Divers', unit:'pièce' },
+  { name:'Raviolis (100g)',        cal:155, prot:7,   carb:23,  fat:4,    cat:'🍝 Divers' },
+  { name:'Crème caramel',          cal:130, prot:4,   carb:22,  fat:3.5,  cat:'🍮 Desserts' },
+  { name:'Panna cotta',            cal:170, prot:3,   carb:19,  fat:9,    cat:'🍮 Desserts' },
+  { name:'Mousse au chocolat',     cal:210, prot:5,   carb:22,  fat:12,   cat:'🍮 Desserts' },
+  { name:'Crème brûlée',           cal:215, prot:4,   carb:20,  fat:13,   cat:'🍮 Desserts' },
+  { name:'Profiteroles',           cal:320, prot:5,   carb:32,  fat:19,   cat:'🍮 Desserts' },
+  { name:'Pancakes nature',        cal:227, prot:6,   carb:32,  fat:9,    cat:'🥞 Petit-déjeuner' },
+  { name:'Porridge (lait)',        cal:130, prot:5.5, carb:22,  fat:3,    cat:'🥞 Petit-déjeuner' },
+  { name:'Granola maison',         cal:450, prot:10,  carb:56,  fat:20,   cat:'🥞 Petit-déjeuner' },
+  { name:'Pain perdu',             cal:290, prot:8,   carb:38,  fat:12,   cat:'🥞 Petit-déjeuner' },
+  { name:'Acai bowl (base)',       cal:180, prot:3,   carb:25,  fat:8,    cat:'🥞 Petit-déjeuner' },
 ];
+
+
 
 // ============================================================
 // DATA MANAGEMENT
@@ -1367,26 +1697,30 @@ function renderHealthScore(profile, log) {
   const score  = detail.total;
   const level  = getScoreLevel(score);
 
-  // Big circle arc
-  const circ   = 214;
-  const offset = circ - (circ * score / 100);
-  const arc    = document.getElementById('score-arc');
+  // r=34 → circumference = 2π×34 ≈ 213.6 → use 214
+  const CIRC = 214;
+  const targetOffset = CIRC - (CIRC * score / 100);
+  const arc = document.getElementById('score-arc');
   if (arc) {
-    // Animate from current to new value
-    const currentOffset = parseFloat(arc.style.strokeDashoffset) || circ;
-    arc.style.strokeDashoffset = currentOffset; // reset first
-    requestAnimationFrame(() => { arc.style.strokeDashoffset = offset; });
+    // Force reflow then animate
+    arc.style.transition = 'none';
+    arc.style.strokeDashoffset = CIRC;
+    arc.getBoundingClientRect(); // trigger reflow
+    arc.style.transition = 'stroke-dashoffset 1s ease';
+    arc.style.strokeDashoffset = targetOffset;
   }
 
-  // Number (count-up animation)
+  // Count-up animation for number
   const valEl = document.getElementById('score-value');
   if (valEl) {
-    const start = parseInt(valEl.textContent) || 0;
-    const duration = 800;
+    const start = parseInt(valEl.dataset.score || '0');
+    valEl.dataset.score = score;
+    const duration = 900;
     const startTime = performance.now();
     const animate = (now) => {
       const t = Math.min((now - startTime) / duration, 1);
-      valEl.textContent = Math.round(start + (score - start) * t);
+      const ease = 1 - Math.pow(1 - t, 3);
+      valEl.textContent = Math.round(start + (score - start) * ease);
       if (t < 1) requestAnimationFrame(animate);
     };
     requestAnimationFrame(animate);
@@ -1396,30 +1730,26 @@ function renderHealthScore(profile, log) {
   const badge = document.getElementById('score-level-badge');
   if (badge) {
     badge.textContent = level.label;
-    badge.style.background = level.color + '22';
-    badge.style.color       = level.color;
-    badge.style.borderColor = level.color + '55';
+    badge.style.background   = level.color + '22';
+    badge.style.color        = level.color;
+    badge.style.borderColor  = level.color + '55';
   }
 
   // Breakdown pills
-  const pills = {
-    cal:   detail.cal,
-    prot:  detail.prot,
-    water: detail.water,
-    steps: detail.steps,
-    act:   detail.act,
-  };
+  const pills = { cal: detail.cal, prot: detail.prot, water: detail.water, steps: detail.steps, act: detail.act };
   Object.entries(pills).forEach(([key, d]) => {
     const bar  = document.getElementById(`pbar-${key}`);
     const pts  = document.getElementById(`ppts-${key}`);
-    const pill = document.getElementById(`pill-${key}`);
-    if (bar)  bar.style.width = d.pct + '%';
-    if (pts)  pts.textContent = `${d.pts}/${d.max}`;
-    if (pill) {
-      // Color bar based on progress
-      const col = d.pct >= 80 ? '#4ade80' : d.pct >= 50 ? '#22d3ee' : d.pct > 0 ? '#f97316' : '#f43f5e22';
-      bar.style.background = col;
-    }
+    if (!bar || !pts) return;
+    const col = d.pct >= 80 ? '#4ade80' : d.pct >= 50 ? '#22d3ee' : d.pct > 0 ? '#f97316' : 'rgba(244,63,94,0.3)';
+    bar.style.background = col;
+    // Animate bar width
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    bar.getBoundingClientRect();
+    bar.style.transition = 'width 0.9s ease';
+    bar.style.width = d.pct + '%';
+    pts.textContent = `${d.pts}/${d.max}`;
   });
 }
 
