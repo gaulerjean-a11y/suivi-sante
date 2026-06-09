@@ -2018,31 +2018,45 @@ function dismissPWA() {
 }
 
 // ============================================================
-// API KEY MANAGEMENT (OpenRouter)
+// API KEY MANAGEMENT (universel — Gemini / OpenRouter / Groq)
 // ============================================================
+
+function detectProvider(key) {
+  if (!key) return null;
+  if (key.startsWith('AQ') || key.startsWith('AI')) return 'gemini';
+  if (key.startsWith('sk-or')) return 'openrouter';
+  if (key.startsWith('gsk_')) return 'groq';
+  return 'openrouter'; // fallback
+}
 
 function saveApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
   if (!key) return showToast('Entre ta clé API');
-  localStorage.setItem('vitalis_openrouter_key', key);
+  localStorage.setItem('vitalis_ai_key', key);
   document.getElementById('api-key-input').value = '';
   showApiKeyStatus(true);
   showToast('✅ Clé API sauvegardée !');
 }
 
 function getApiKey() {
-  return localStorage.getItem('vitalis_openrouter_key') || '';
+  // compat avec anciens noms de clé
+  return localStorage.getItem('vitalis_ai_key')
+      || localStorage.getItem('vitalis_openrouter_key')
+      || localStorage.getItem('vitalis_gemini_key')
+      || '';
 }
 
 function showApiKeyStatus(saved) {
   const el = document.getElementById('api-key-status');
   if (!el) return;
   const key = getApiKey();
+  const provider = detectProvider(key);
+  const providerName = provider === 'gemini' ? 'Gemini' : provider === 'groq' ? 'Groq' : 'OpenRouter';
   if (saved || key) {
     const masked = key ? key.substring(0, 8) + '••••••••••••' : '••••••••••••';
-    el.innerHTML = `<span class="api-key-ok">✅ Clé configurée (${masked}) — IA activée</span>`;
+    el.innerHTML = `<span class="api-key-ok">✅ Clé ${providerName} configurée (${masked}) — IA activée</span>`;
   } else {
-    el.innerHTML = '<span class="api-key-missing">⚠️ Aucune clé configurée — <a href="https://openrouter.ai/keys" target="_blank">Obtenir une clé gratuite sur OpenRouter</a></span>';
+    el.innerHTML = '<span class="api-key-missing">⚠️ Aucune clé configurée — colle ta clé Gemini, OpenRouter ou Groq</span>';
   }
 }
 
@@ -2050,7 +2064,7 @@ function showApiKeyStatus(saved) {
 const _origRenderProfile = typeof renderProfile === 'function' ? renderProfile : null;
 
 // ============================================================
-// AI FOOD ANALYSIS — OPENROUTER
+// AI FOOD ANALYSIS — UNIVERSEL (Gemini / OpenRouter / Groq)
 // ============================================================
 
 async function analyzeWithAI() {
@@ -2065,9 +2079,11 @@ async function analyzeWithAI() {
 
   const apiKey = getApiKey();
   if (!apiKey) {
-    showToast('⚠️ Configure ta clé OpenRouter dans Profil');
+    showToast('⚠️ Configure ta clé API dans Profil');
     return;
   }
+
+  const provider = detectProvider(apiKey);
 
   // UI — loading state
   const btn    = document.getElementById('btn-ai-analyze');
@@ -2082,29 +2098,59 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après, sans 
 Si l'aliment n'existe pas ou est inconnu, retourne {"error": "inconnu"}.`;
 
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': window.location.href,
-        'X-Title': 'Vitalis'
-      },
-      body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.1,
-        max_tokens: 256
-      })
-    });
+    let raw = '';
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    if (provider === 'gemini') {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 256 }
+          })
+        }
+      );
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+      const data = await res.json();
+      raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    } else if (provider === 'groq') {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.1, max_tokens: 256
+        })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+      const data = await res.json();
+      raw = data.choices?.[0]?.message?.content || '';
+
+    } else {
+      // OpenRouter (défaut)
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.href,
+          'X-Title': 'Vitalis'
+        },
+        body: JSON.stringify({
+          model: 'meta-llama/llama-3.1-8b-instruct',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.1, max_tokens: 256
+        })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+      const data = await res.json();
+      raw = data.choices?.[0]?.message?.content || '';
     }
 
-    const data = await res.json();
-    const raw  = data.choices?.[0]?.message?.content || '';
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
 
@@ -2139,8 +2185,8 @@ Si l'aliment n'existe pas ou est inconnu, retourne {"error": "inconnu"}.`;
     btn.innerHTML = `<span class="ai-btn-icon">✅</span><div class="ai-btn-labels"><span class="ai-btn-text">Macros remplis !</span><span class="ai-btn-sub">Clique "Ajouter" pour confirmer</span></div>`;
 
   } catch (e) {
-    console.error('OpenRouter error:', e);
-    if (e.message.includes('401') || e.message.includes('auth')) {
+    console.error('AI error:', e);
+    if (e.message.includes('401') || e.message.includes('API_KEY') || e.message.includes('auth')) {
       status.innerHTML = '<span class="ai-error">❌ Clé API invalide — vérifie dans Profil</span>';
     } else {
       status.innerHTML = `<span class="ai-error">❌ Erreur : ${e.message}</span>`;
