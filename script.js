@@ -90,6 +90,30 @@ async function loadDataCloud() {
 }
 
 function bootAuth() {
+  // Vérifie d'abord si une session existe déjà (évite l'écran de login à chaque ouverture)
+  _supa.auth.getSession().then(async ({ data: { session } }) => {
+    if (session && session.user) {
+      _currentUser = session.user;
+      document.getElementById('auth-screen').classList.add('hidden');
+      const cloudData = await loadDataCloud();
+      if (cloudData) {
+        const localRaw = localStorage.getItem('vitalis_v3');
+        let localData = null;
+        try { localData = localRaw ? JSON.parse(localRaw) : null; } catch(e) {}
+        const cloudTs = cloudData._savedAt || 0;
+        const localTs = localData?._savedAt || 0;
+        if (!localData || cloudTs >= localTs) {
+          localStorage.setItem('vitalis_v3', JSON.stringify(cloudData));
+          // Restaurer la clé API depuis le cloud
+          if (cloudData._apiKey) localStorage.setItem('vitalis_ai_key', cloudData._apiKey);
+        } else {
+          saveDataCloud(localData);
+        }
+      }
+      initApp();
+    }
+  });
+
   _supa.auth.onAuthStateChange(async (event, session) => {
     if (session && session.user) {
       _currentUser = session.user;
@@ -109,6 +133,8 @@ function bootAuth() {
         // Si cloud plus récent ou pas de données locales → utilise cloud
         if (!localData || cloudTs >= localTs) {
           localStorage.setItem('vitalis_v3', JSON.stringify(cloudData));
+          // Restaurer la clé API depuis le cloud
+          if (cloudData._apiKey) localStorage.setItem('vitalis_ai_key', cloudData._apiKey);
         } else {
           // Local plus récent → upload local vers cloud
           saveDataCloud(localData);
@@ -2176,18 +2202,32 @@ function detectProvider(key) {
 function saveApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
   if (!key) return showToast('Entre ta clé API');
+  // Sauvegarder localement
   localStorage.setItem('vitalis_ai_key', key);
+  // Sauvegarder dans le cloud aussi
+  const data = loadData();
+  data._apiKey = key;
+  saveData(data);
   document.getElementById('api-key-input').value = '';
   showApiKeyStatus(true);
   showToast('✅ Clé API sauvegardée !');
 }
 
 function getApiKey() {
-  // compat avec anciens noms de clé
-  return localStorage.getItem('vitalis_ai_key')
+  // D'abord essayer le localStorage, sinon chercher dans les données cloud
+  const local = localStorage.getItem('vitalis_ai_key')
       || localStorage.getItem('vitalis_openrouter_key')
-      || localStorage.getItem('vitalis_gemini_key')
-      || '';
+      || localStorage.getItem('vitalis_gemini_key');
+  if (local) return local;
+  // Fallback : dans les données sauvegardées
+  try {
+    const data = loadData();
+    if (data._apiKey) {
+      localStorage.setItem('vitalis_ai_key', data._apiKey); // recache localement
+      return data._apiKey;
+    }
+  } catch(e) {}
+  return '';
 }
 
 function showApiKeyStatus(saved) {
