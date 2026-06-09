@@ -426,6 +426,17 @@
       </div>
       <h3 class="sub-title">Informations</h3>
       <div class="info-list" id="profile-info-list"></div>
+      <!-- API Key section -->
+      <div class="api-key-section">
+        <h3 class="sub-title">IA — Clé API Anthropic</h3>
+        <p class="api-key-desc">Nécessaire pour l'analyse automatique des macros. <a href="https://console.anthropic.com" target="_blank">Obtenir une clé →</a></p>
+        <div class="api-key-row">
+          <input type="password" id="api-key-input" placeholder="sk-ant-…" autocomplete="off" />
+          <button class="btn-primary" onclick="saveApiKey()">Sauvegarder</button>
+        </div>
+        <div class="api-key-status" id="api-key-status"></div>
+      </div>
+
       <button class="btn-danger" onclick="resetApp()">🗑️ Réinitialiser l'application</button>
     </section>
 
@@ -494,12 +505,23 @@
       <div id="food-manual-form">
         <div class="form-group">
           <label>Nom de l'aliment</label>
-          <input type="text" id="food-name" placeholder="Ex : Poulet grillé" />
+          <input type="text" id="food-name" placeholder="Ex : Poulet grillé, banane, pizza…" />
         </div>
         <div class="form-group">
           <label>Quantité (g ou ml)</label>
           <input type="number" id="food-qty" placeholder="100" min="1" oninput="recalcFromQty()" />
         </div>
+
+        <!-- AI Analyze Button -->
+        <button class="btn-ai-analyze" id="btn-ai-analyze" onclick="analyzeWithAI()">
+          <span class="ai-btn-icon">✨</span>
+          <div class="ai-btn-labels">
+            <span class="ai-btn-text">Analyser avec l'IA</span>
+            <span class="ai-btn-sub">Remplissage automatique des macros</span>
+          </div>
+        </button>
+        <div class="ai-status" id="ai-status"></div>
+
         <div class="macros-input-grid">
           <div class="form-group">
             <label>Calories</label>
