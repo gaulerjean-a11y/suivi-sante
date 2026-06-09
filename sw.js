@@ -3,7 +3,7 @@
    PWA: Cache-first strategy, offline support
    ============================================= */
 
-const CACHE_NAME = 'vitalis-v2';
+const CACHE_NAME = 'vitalis-v3';
 const ASSETS = [
   './',
   './index.html',
